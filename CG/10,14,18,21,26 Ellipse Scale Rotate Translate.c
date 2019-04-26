@@ -12,12 +12,12 @@ typedef struct
 } Point;
 
 // Scale Given Matrix
-void Scale(Point points[], int count, Point scaling)
+void Scale(Point points[], int count, Point scalingFactors/* Pass Scaling Factors Here*/)
 {
    for (int i = 0; i < count; ++i)
    {
-      points[i].X = points[i].X * scaling.X;
-      points[i].Y = points[i].Y * scaling.Y;
+      points[i].X = points[i].X * scalingFactors.X;
+      points[i].Y = points[i].Y * scalingFactors.Y;
    }
 }
 
@@ -63,7 +63,7 @@ void Plotter(Point points[], int count)
    glEnd();
 }
 
-void EllipseScalingRotationTranslation(Point centre, Point radius, int angle, Point scaling)
+void EllipseScalingRotationTranslation(Point centre, Point radius, int angle, Point scalingFactors/* Pass Scaling Factors Here*/)
 {
    // First we draw Ellipse at origin
    Point Ellipse[360];
@@ -84,7 +84,7 @@ void EllipseScalingRotationTranslation(Point centre, Point radius, int angle, Po
 
    // Scale Ellipse At Origin
    glColor3f(0, 0, 1);
-   Scale(Ellipse, count, scaling);
+   Scale(Ellipse, count, scalingFactors);
    Plotter(Ellipse, count);
 
    // Plot Rotated Ellipse
@@ -114,7 +114,7 @@ void disp()
    glColor3f(0, 0, 0);
    // call your function define at beginning
    // for example WriteFunctionName();
-   EllipseScalingRotationTranslation(PointAt(50, 50), PointAt(20, 10), 90, PointAt(0.5, 0.5));
+   EllipseScalingRotationTranslation(PointAt(50, 50), PointAt(20, 10), 90, PointAt(0.5, 0.5) /*Scaling Factors Here*/);
    glFlush();
 } // disp
 int main(int argv, char** argc)

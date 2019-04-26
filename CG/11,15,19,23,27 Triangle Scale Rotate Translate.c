@@ -4,6 +4,7 @@
 #include <GL/gl.h>
 #include <gl/glut.h>
 
+#include <math.h>
 typedef struct
 {
    float X;
@@ -28,12 +29,12 @@ void Plotter(Point points[3])
    glEnd();
 }
 // Scale Given Matrix
-void Scale(Point points[], int count, Point scaling)
+void Scale(Point points[], int count, Point scalingFactors/* Pass Scaling Factors Here*/)
 {
    for (int i = 0; i < count; ++i)
    {
-      points[i].X = points[i].X * scaling.X;
-      points[i].Y = points[i].Y * scaling.Y;
+      points[i].X = points[i].X * scalingFactors.X;
+      points[i].Y = points[i].Y * scalingFactors.Y;
    }
 }
 
@@ -65,8 +66,6 @@ void Rotate(Point points[], int count, float angle)
 
       points[i].X = point.X;
       points[i].Y = point.Y;
-
-      printf("\nX=%f\t:Y=%f\t:%f", point.X, point.Y, angle);
    }
 }
 
@@ -78,7 +77,7 @@ Point PointAt(float const X, float const Y)
    return point;
 }
 
-void TriangleOperations(int side, Point lMin, int angle, Point scaling)
+void TriangleOperations(int side, Point lMin, int angle, Point scalingFactors/* Pass Scaling Factors Here*/)
 {
    Point triangle[3];
 
@@ -95,7 +94,7 @@ void TriangleOperations(int side, Point lMin, int angle, Point scaling)
 
    // Plot Scaled Triangle
    glColor3f(1, 0, 0);
-   Scale(triangle, 3, scaling);
+   Scale(triangle, 3, scalingFactors);
    Plotter(triangle, 3);
 
    // Plot Rotated Triangle
@@ -116,7 +115,7 @@ void disp()
    glColor3f(0, 0, 0);
    // call your function define at beginning
    // for example WriteFunctionName();
-   TriangleOperations(50, PointAt(50, 50), 90, PointAt(0.5, 0.5));
+   TriangleOperations(50, PointAt(50, 50), 90, PointAt(0.5, 0.5)/*Scaling Factors Here*/);
    glFlush();
 } // disp
 int main(int argv, char** argc)

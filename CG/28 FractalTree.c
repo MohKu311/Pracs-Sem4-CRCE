@@ -1,9 +1,11 @@
+#include <Windows.h>
+
 #include <GL/GLU.h>
 #include <GL/gl.h>
-#include <Windows.h>
 #include <gl/glut.h>
 
 #include <math.h>
+
 double DegreeToRadians(double angle)
 {
    return (angle * 3.14159) / 180.0;
@@ -20,7 +22,7 @@ void DrawFractalTree(int x0, int y0, int length, int angle, int count)
    glVertex2i(x0, y0);
    glVertex2i(xn, yn);
    glEnd();
-   printf("%d %d\n", x0, y0);
+
    // Draw Next Line at 30
    DrawFractalTree(xn, yn, length * 0.6, angle + 30, count + 1);
    DrawFractalTree(xn, yn, length * 0.6, angle + 60, count + 1);

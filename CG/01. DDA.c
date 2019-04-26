@@ -1,12 +1,12 @@
+#include <Windows.h>
+
 #include <GL/GL.h>
 #include <GL/GLU.h>
 #include <GL/glut.h>
-#include <Windows.h>
 
 void DDA(int x0, int y0, int xn, int yn)
 {
    // Use pixel plotting in glBegin and glEnd
-   glBegin(GL_POINTS);
    int dx = xn - x0;
    int dy = yn - y0;
 
@@ -16,6 +16,8 @@ void DDA(int x0, int y0, int xn, int yn)
 
    float x = x0;
    float y = y0;
+
+   glBegin(GL_POINTS);
    for (int i = 0; i < step; ++i)
    {
       x = x + x_inc;

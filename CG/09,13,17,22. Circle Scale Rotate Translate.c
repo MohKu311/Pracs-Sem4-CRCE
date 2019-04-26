@@ -12,12 +12,12 @@ typedef struct
 } Point;
 
 // Scale Given Matrix
-void Scale(Point points[], int count, Point scaling)
+void Scale(Point points[], int count, Point scalingFactors)
 {
    for (int i = 0; i < count; ++i)
    {
-      points[i].X = points[i].X * scaling.X;
-      points[i].Y = points[i].Y * scaling.Y;
+      points[i].X = points[i].X * scalingFactors.X;
+      points[i].Y = points[i].Y * scalingFactors.Y;
    }
 }
 
@@ -64,7 +64,7 @@ void Plotter(Point points[], int count)
    glEnd();
 }
 
-void CircleScalingRotationTranslation(Point centre, int radius, int angle, Point scaling)
+void CircleScalingRotationTranslation(Point centre, int radius, int angle, Point scalingFactors/*Scaling Factors*/)
 {
    // First we draw circle at origin
    Point circle[360];
@@ -85,7 +85,7 @@ void CircleScalingRotationTranslation(Point centre, int radius, int angle, Point
 
    // Scale Circle At Origin
    glColor3f(0, 0, 1);
-   Scale(circle, count, scaling);
+   Scale(circle, count, scalingFactors);
    Plotter(circle, count);
 
    // Plot Scaled Circle at Location
@@ -115,7 +115,7 @@ void disp()
    glColor3f(0, 0, 0);
    // call your function define at beginning
    // for example WriteFunctionName();
-   CircleScalingRotationTranslation(PointAt(50, 50), 20, 40, PointAt(0.5, 0.5));
+   CircleScalingRotationTranslation(PointAt(50, 50), 20, 40, PointAt(0.5, 0.5) /*Scaling Factors*/);
    glFlush();
 } // disp
 int main(int argv, char** argc)

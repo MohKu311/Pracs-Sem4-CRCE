@@ -1,7 +1,8 @@
+#include <Windows.h>
+
 #include <GL/GL.h>
 #include <GL/GLU.h>
 #include <GL/glut.h>
-#include <Windows.h>
 
 #include <stdio.h>
 void DDA(int x0, int y0, int xn, int yn)

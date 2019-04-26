@@ -1,49 +1,59 @@
+#include <Windows.h>
+
 #include <GL/GLU.h>
 #include <GL/gl.h>
-#include <Windows.h>
 #include <gl/glut.h>
 
 #include <math.h>
-#include <stdio.h>
 
-void MatrixMultiply(float left[][3], float right[3][3], float result[][3], int leftRows)
+typedef struct
 {
-   // Left has 3 Cols
-   // Right has 3 Rows and 3 Cols
-   for (int rL = 0; rL < leftRows; ++rL)
+   int X;
+   int Y;
+} Point;
+
+// Translate Given Matrix
+void Translate(Point points[], int count, Point translate)
+{
+   for (int i = 0; i < count; ++i)
    {
-      for (int cR = 0; cR < 3; ++cR)
-      {
-         result[rL][cR] = 0;
-         for (int cLrR = 0; cLrR < 3; ++cLrR)
-         {
-            result[rL][cR] += left[rL][cLrR] * right[cLrR][cR];
-         }
-      }
+      points[i].X = points[i].X + translate.X;
+      points[i].Y = points[i].Y + translate.Y;
    }
 }
 
-void Translate(float points[][3], int countPoints, float tx, float ty)
+float DegreeToRadian(int const angle)
 {
-   for (int i = 0; i < countPoints; ++i)
+   return (3.14159 / 180) * angle;
+}
+
+// Rotate A Point
+void Rotate(Point points[], int count, float angle)
+{
+   angle = DegreeToRadian(angle);
+   for (int i = 0; i < count; ++i)
    {
-      // X
-      points[i][0] = points[i][0] + tx;
-      // Y
-      points[i][1] = points[i][1] + ty;
+      // Let us See Rotation Matrix
+      Point point;
+      point.X = points[i].X * cosf(angle) - points[i].Y * sinf(angle);
+      point.Y = points[i].X * sinf(angle) + points[i].Y * cosf(angle);
+
+      points[i].X = point.X;
+      points[i].Y = point.Y;
    }
 }
 
-void Rotate(float points[][3], int countPoints, double angle, float result[][3])
+Point PointAt(int const X, int const Y)
 {
-   angle = (angle / 180.0) * 3.14159;
-   float rotationMatrix[3][3] = {{cos(angle), sin(angle), 0}, {-sin(angle), cos(angle), 0}, {0, 0, 1}};
-   MatrixMultiply(points, rotationMatrix, result, countPoints);
+   Point point;
+   point.X = X;
+   point.Y = Y;
+   return point;
 }
 
-void SemiCircle(int r, int xc, int yc, int angle)
+void SemiCircle(int r, Point center, int angle)
 {
-   float matrix[1000][3];
+   Point points[1000];
 
    // Approx 5/4 = 1
    int decision = 1 - r;
@@ -51,10 +61,7 @@ void SemiCircle(int r, int xc, int yc, int angle)
    int y = r;
 
    // First Point
-   matrix[0][0] = 0; // X
-   matrix[0][1] = r; // Y
-   matrix[0][2] = 1;
-
+   points[0] = PointAt(0, r);
    int count = 1;
    while (x <= y)
    {
@@ -70,32 +77,25 @@ void SemiCircle(int r, int xc, int yc, int angle)
          x = x + 1;
          y = y - 1;
       }
-      matrix[count][0] = x;
-      matrix[count][1] = y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(x, y);
       ++count;
-      matrix[count][0] = y;
-      matrix[count][1] = x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(y, x);
       ++count;
-      matrix[count][0] = -x;
-      matrix[count][1] = y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-x, y);
       ++count;
-      matrix[count][0] = -y;
-      matrix[count][1] = x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-y, x);
       ++count;
    }
 
-   float result[300][3];
-   Rotate(matrix, count, angle, result);
-   Translate(result, count, xc, yc);
+   Rotate(points, count, angle);
+   Translate(points, count, center);
 
    // Use pixel plotting in glBegin and glEnd
    glBegin(GL_POINTS);
    for (int i = 0; i < count; ++i)
-      glVertex2f(result[i][0] /*X*/, result[i][1] /*Y*/);
+   {
+      glVertex2f(points[i].X, points[i].Y);
+   }
    // glVertex2f(x,y); //Sample for ploting pixel at (x,y)
    glEnd();
 }
@@ -104,7 +104,7 @@ void DrawPattern(int x0, int y0, int radius, int counts)
    int angle = 0;
    for (int i = 1; i <= counts; ++i)
    {
-      SemiCircle(radius, x0, y0, angle);
+      SemiCircle(radius, PointAt(x0, y0), angle);
       angle = (angle + 180) % 360;
       x0 = x0 + 2 * radius;
    }

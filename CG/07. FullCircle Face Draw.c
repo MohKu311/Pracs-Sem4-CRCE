@@ -1,30 +1,37 @@
+#include <Windows.h>
+
 #include <GL/GL.h>
 #include <GL/GLU.h>
-#include <Windows.h>
 #include <gl/glut.h>
 
 #include <math.h>
 
-void Translate(float points[][3], int countPoints, float tx, float ty)
+typedef struct
 {
-   for (int i = 0; i < countPoints; ++i)
+   int X;
+   int Y;
+} Point;
+
+// Translate Given Matrix
+void Translate(Point points[], int count, Point translate)
+{
+   for (int i = 0; i < count; ++i)
    {
-      // X
-      points[i][0] = points[i][0] + tx;
-      // Y
-      points[i][1] = points[i][1] + ty;
+      points[i].X = points[i].X + translate.X;
+      points[i].Y = points[i].Y + translate.Y;
    }
 }
-float DegreeToRadian(float angle)
+Point PointAt(int const X, int const Y)
 {
-   return (angle / 180.0) * 3.14159;
+   Point point;
+   point.X = X;
+   point.Y = Y;
+   return point;
 }
 
-void FullCircle(int r, int xc, int yc, int angle)
+void FullCircle(int r, Point center)
 {
-   float matrix[800][3];
-
-   int count = 1;
+   Point points[800];
 
    // Approx 5/4 = 1
    int decision = 1 - r;
@@ -32,10 +39,9 @@ void FullCircle(int r, int xc, int yc, int angle)
    int y = r;
 
    // First Point
-   matrix[0][0] = 0; // X
-   matrix[0][1] = r; // Y
-   matrix[0][2] = 1;
+   points[0] = PointAt(0, r);
 
+   int count = 1;
    while (x <= y)
    {
       if (decision < 0)
@@ -50,58 +56,45 @@ void FullCircle(int r, int xc, int yc, int angle)
          x = x + 1;
          y = y - 1;
       }
-      matrix[count][0] = x;
-      matrix[count][1] = y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(x, y);
       ++count;
-      matrix[count][0] = y;
-      matrix[count][1] = x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(y, x);
       ++count;
-      matrix[count][0] = -x;
-      matrix[count][1] = y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-x, y);
       ++count;
-      matrix[count][0] = -y;
-      matrix[count][1] = x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-y, x);
       ++count;
-      matrix[count][0] = -x;
-      matrix[count][1] = -y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-x, -y);
       ++count;
-      matrix[count][0] = -y;
-      matrix[count][1] = -x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(-y, -x);
       ++count;
-      matrix[count][0] = x;
-      matrix[count][1] = -y;
-      matrix[count][2] = 1;
+      points[count] = PointAt(x, -y);
       ++count;
-      matrix[count][0] = y;
-      matrix[count][1] = -x;
-      matrix[count][2] = 1;
+      points[count] = PointAt(y, -x);
       ++count;
    }
 
-   Translate(matrix, count, xc, yc);
+   Translate(points, count, center);
 
    // Use pixel plotting in glBegin and glEnd
    glBegin(GL_POINTS);
    for (int i = 0; i < count; ++i)
-      glVertex2f(matrix[i][0] /*X*/, matrix[i][1] /*Y*/);
+   {
+      glVertex2f(points[i].X, points[i].Y);
+   }
    // glVertex2f(x,y); //Sample for ploting pixel at (x,y)
    glEnd();
 }
+
 void DrawPattern(int x0, int y0)
 {
    // Draw Full Face
-   FullCircle(80, x0, y0, 0);
+   FullCircle(80, PointAt(x0, y0));
    // Draw Eyes
-   FullCircle(15, x0 + 25, y0 + 25, 0);
-   FullCircle(15, x0 - 25, y0 + 25, 0);
+   FullCircle(15, PointAt(x0 + 25, y0 + 25));
+   FullCircle(15, PointAt(x0 - 25, y0 + 25));
    // Draw Mouth
-   FullCircle(25, x0, y0 - 35, 0);
+   FullCircle(25, PointAt(x0, y0 - 35));
 }
 void disp()
 {

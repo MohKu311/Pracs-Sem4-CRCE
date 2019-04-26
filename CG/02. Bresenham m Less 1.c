@@ -1,6 +1,7 @@
+#include <Windows.h>
+
 #include <GL/GLU.h>
 #include <GL/gl.h>
-#include <Windows.h>
 #include <gl/glut.h>
 
 void BressenhamMLess1(int x0, int y0, int xn, int yn)
